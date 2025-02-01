@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .cors().and()  // Apply CORS configurations
                 .authorizeHttpRequests((requests) -> requests
                         // Public endpoints (WebSocket)
+                        .requestMatchers("/banners/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/auth/customer/sign-in",
                                 "/auth/customer/sign-up",
@@ -37,6 +38,7 @@ public class SecurityConfig {
                                 "/uploads/**",
                                 "/payment/vnpay-callback",
                                 "/shop/add",
+                                "/banners/all",
                                 "/auth/shop/login",
                                 "/customer/forgot-password",
                                 "/customer/change-password-by-code",
@@ -59,7 +61,8 @@ public class SecurityConfig {
                                 "/category/*",
                                 "/admin/forgot-password",
                                 "/admin/change-password-by-code",
-                                "/admin/check-code"
+                                "/admin/check-code",
+                                "/banners"
                         ).permitAll()  // No authentication required
                         .anyRequest().authenticated()  // All other requests require authentication
                 )
