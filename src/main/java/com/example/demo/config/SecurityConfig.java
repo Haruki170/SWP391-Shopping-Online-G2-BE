@@ -62,7 +62,7 @@ public class SecurityConfig {
                                 "/admin/forgot-password",
                                 "/admin/change-password-by-code",
                                 "/admin/check-code",
-                                "/banners"
+                                "/banners","/blog/*","/blog"
                         ).permitAll()  // No authentication required
                         .anyRequest().authenticated()  // All other requests require authentication
                 )
