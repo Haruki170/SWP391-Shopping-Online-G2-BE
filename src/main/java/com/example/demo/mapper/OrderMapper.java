@@ -24,7 +24,7 @@ public class OrderMapper implements RowMapper<Order> {
             order.setPayment(rs.getInt("payment_method_id"));
             order.setCreate_at(rs.getString("create_at"));
             order.setUpdate_at(rs.getString("update_at"));
-
+            order.setDiscount(rs.getInt("discount"));
             Address address = new Address();
             address.setProvince(rs.getString("province"));
             address.setDistrict(rs.getString("district"));
@@ -43,7 +43,6 @@ public class OrderMapper implements RowMapper<Order> {
             shop.setId(rs.getInt("shop_id"));
 
             order.setShop(shop);
-
         }catch (Exception e) {
             System.out.println(e.getMessage());
         }

@@ -18,4 +18,6 @@ public class PaymentDto {
     private Address address;
     private Customer customer;
     private String note;
+    private String discountCode = "";
+    private Integer discountAmount = 0;
 }

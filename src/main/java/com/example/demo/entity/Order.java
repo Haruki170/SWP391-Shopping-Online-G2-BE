@@ -23,5 +23,5 @@ public class Order extends General {
     private Shop shop;
     private int payment;
     private List<OrderDetail> orderDetails;
-    private String note;
+    private int discount;
 }
