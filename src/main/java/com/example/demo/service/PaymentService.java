@@ -44,7 +44,9 @@ public class PaymentService {
         if (!code.equals("00")) {
             return null;
         }
-        String url = savePaymentGeneral(paymentDto, amount, 0, 2, 1);
+
+        String url = savePaymentGeneral(paymentDto, Integer.parseInt(amount), 0, 2, 1,0,0);
+
         orderTransactionRespository.deleteOrderTransactionById(orderTransaction.getId());
         return url;
     }
@@ -55,14 +57,31 @@ public class PaymentService {
         Customer customer = customerRepository.findById(id);
         paymentDto.setCustomer(customer);
         int total = 0;
+        int totalProduct = 0;
+        int product = 0;
+        int shipCost = 0;
         for (OrderDto order : paymentDto.getOrders()) {
             total += order.getShipCost() + order.getTotalCost();
+            shipCost = order.getShipCost();
         }
-        return savePaymentGeneral(paymentDto, String.valueOf(total), 0, 1, 0);
+        for (OrderDto order : paymentDto.getOrders()) {
+            totalProduct += order.getTotalCost();
+        }
+        product = totalProduct;
+        // Xử lý khi discountAmount không được gửi về
+        int discountAmount = (paymentDto.getDiscountAmount() != null) ? paymentDto.getDiscountAmount() : 0;
+
+        // Trừ số tiền giảm giá nếu có
+        total -= discountAmount;
+        if (total < 0) {
+            total = 0; // Đảm bảo tổng không âm
+        }
+
+        return savePaymentGeneral(paymentDto, product, 0, 1, 0,discountAmount,shipCost);
     }
 
 
-    public String savePaymentGeneral(PaymentDto paymentDto, String amount, int status, int payment, int pay) {
+    public String savePaymentGeneral(PaymentDto paymentDto,int amount, int status, int payment, int pay,int discountAmount,int shipCost) {
 
         List<OrderDto> orders = paymentDto.getOrders();
         Address address = paymentDto.getAddress();
@@ -77,8 +96,8 @@ public class PaymentService {
             createOrder.setPayment_status(pay);
             createOrder.setPayment(payment);
             createOrder.setOrder_status(status);
-            createOrder.setOrderTotal(order.getTotalCost());
-
+            createOrder.setOrderTotal(amount);
+            createOrder.setDiscount(discountAmount);
             int check = orderRespository.saveOrder(createOrder);
             if (check != 0) {
                 createOrder.setId(check);
@@ -107,12 +126,12 @@ public class PaymentService {
             }
         }
         if (pay != 0) {
-            amount = String.valueOf(Integer.parseInt(amount) / 100);
+            amount = amount / 100;
 
         }
 
         return "http://localhost:5173/payment-success"
-                + "?amount=" + URLEncoder.encode(amount, StandardCharsets.UTF_8)
+                + "?amount=" + URLEncoder.encode((amount-discountAmount+shipCost)+"", StandardCharsets.UTF_8)
                 + "&email=" + URLEncoder.encode(customer.getEmail(), StandardCharsets.UTF_8)
                 + "&numberOrder=" + URLEncoder.encode(String.valueOf(orders.size()), StandardCharsets.UTF_8)
                 + "&address=" + URLEncoder.encode(paymentDto.getAddress().getAddress(), StandardCharsets.UTF_8)

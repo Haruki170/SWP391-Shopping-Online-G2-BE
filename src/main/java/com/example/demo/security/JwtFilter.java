@@ -64,7 +64,10 @@ public class JwtFilter extends OncePerRequestFilter {
             "/admin/check-code",
             "/shop/customer-detail-shop/*",
             "category/products",
-            "/banners/all"
+            "/banners/all",
+            "/favourite/*",
+            "/blog/*",
+            "/blog"
             // Thêm các endpoint khác nếu cần
     );
 

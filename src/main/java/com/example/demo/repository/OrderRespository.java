@@ -17,11 +17,11 @@ public class OrderRespository extends AbstractRepository<Order> implements IOrde
     public int saveOrder(Order order) {
         String sql = "INSERT INTO `order`( `customer_id`, `shop_id`, `order_total`, " +
                 "`payment_status`, `address`,  `province`, `district` ,`ward`, `phone_receiver`, `name_receiver`, `ship_cost`," +
-                " `payment_method_id`,order_status) VALUES (?, ? ,? ,?, ? , ?, ?, ?, ?, ? ,?, ?,0)";
+                " `payment_method_id`,order_status,discount) VALUES (?, ? ,? ,?, ? , ?, ?, ?, ?, ? ,?, ?,0,?)";
         Address address = order.getAddress();
         return super.saveAndReturnId(sql ,order.getCustomer().getId(), order.getShop().getId(), order.getOrderTotal(),order.getPayment_status(),
                 address.getAddress(), address.getProvince(), address.getDistrict(),
-                address.getWard(), address.getPhone(), address.getNameReceiver(), order.getShipCost(),order.getPayment());
+                address.getWard(), address.getPhone(), address.getNameReceiver(), order.getShipCost(),order.getPayment(),order.getDiscount());
     }
 
     @Override
