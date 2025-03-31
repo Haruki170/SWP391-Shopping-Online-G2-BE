@@ -8,7 +8,6 @@ import java.util.List;
 public interface IAdminRepository {
     public List<Admin> findAllAdmin();
     public Admin findAdminById(int id);
-    public boolean insert(Admin admin);
     public boolean update(Admin admin);
     public boolean delete(Admin admin);
     public int checkExist(String email);
