@@ -112,5 +112,20 @@ public class CartService implements ICartService {
         return cartResponses;
     }
 
-
+    public List<CartResponse> getGroupCartItem(Set<Shop> shops, List<Cart_item> cartItems){
+            List<CartResponse> cartResponses = new ArrayList<>();
+            for(Shop shop : shops){
+                List<Cart_item> items = new ArrayList<>();
+                for (Cart_item cart_item : cartItems) {
+                    String addOns = cart_item.getAddOns();
+                    List<ProductAddOn> listAddons = productAddonRepository.findAllProductAddonByID(addOns);
+                    cart_item.setProductAddOns(listAddons);
+                    if(cart_item.getProduct().getShop().getId() == shop.getId()){
+                        items.add(cart_item);
+                    }
+                }
+                cartResponses.add(new CartResponse(shop,items));
+            }
+            return cartResponses;
+     }
 }
