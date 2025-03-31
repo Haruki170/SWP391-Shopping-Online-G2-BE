@@ -30,12 +30,7 @@ public class AuthController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/customer/sign-in")
-    public ResponseEntity signIn(@RequestBody Auth user) throws Exception {
-        AuthResponse auth = authSerive.customerLogin(user);
-        ApiResponse<AuthResponse> response = new ApiResponse<>(200,"success",auth);
-        return ResponseEntity.ok().body(response);
-    }
+   
     @GetMapping("/check-login")
     public ResponseEntity checkLogin(@RequestHeader("Authorization") String authorizationHeader) throws Exception {
         String email = token.getEmailfromToken();
