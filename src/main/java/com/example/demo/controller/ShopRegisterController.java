@@ -30,24 +30,7 @@ public class ShopRegisterController {
     ShopRegisterRespository shopRegisterRespository;
     @Autowired
     FileUpload fileUpload;
-    @PostMapping("/add")
-    public ResponseEntity add(@RequestParam("form") String registeForm, @RequestParam("images") List<MultipartFile> images) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        ShopRegister shopRegister = mapper.readValue(registeForm, ShopRegister.class);
-
-        int id = token.getIdfromToken();
-        Customer customer = new Customer();
-        customer.setId(id);
-        shopRegister.setCustomer(customer);
-        int last_id = shopRegisterRespository.insert(shopRegister);
-        for(MultipartFile image : images) {
-            String path = fileUpload.uploadImage(image);
-            shopRegisterRespository.insertImage(path,last_id);
-        }
-
-        ApiResponse<String> apiResponse = new ApiResponse(200, "sucess", null);
-        return ResponseEntity.ok(apiResponse);
-    }
+    
 
     @GetMapping("/find-add")
     public ResponseEntity getAll() {
