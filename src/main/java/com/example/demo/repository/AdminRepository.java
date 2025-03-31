@@ -23,7 +23,12 @@ public class AdminRepository extends AbstractRepository<Admin> implements IAdmin
         return admin;
     }
 
-
+    @Override
+    public boolean insert(Admin admin) {
+    String sql = "insert into admin(admin_name, admin_email, admin_password, admin_phone, admin_address, admin_district, admin_ward, admin_province,status) values(?,?,?,?,?,?,?,?,0)";
+    super.save(sql, admin.getName(), admin.getEmail(), admin.getPassword(), admin.getPhone(), admin.getAddress(), admin.getDistrict(), admin.getWard(), admin.getProvince());
+    return true;
+    }
 
     @Override
     public boolean update(Admin admin) {
