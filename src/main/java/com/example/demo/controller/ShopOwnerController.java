@@ -99,5 +99,31 @@ public class ShopOwnerController {
         return response;
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity forgotPassword(@RequestParam String email) throws AppException {
+        System.out.println(email);
+        shopOwnerService.forgotPassword(email);
+        return ResponseEntity.ok(new ApiResponse<>(200, "Email khôi phục mật khẩu đã được gửi", email));
+    }
 
+    @PostMapping("/change-password-by-code")
+    public ResponseEntity changePasswordByCode(@RequestBody ForgotPasswordDto forgotPasswordDto) throws AppException {
+        System.out.println(forgotPasswordDto);
+        shopOwnerService.resetPassword(forgotPasswordDto.getEmail(), forgotPasswordDto.getNewPassword());
+        return ResponseEntity.ok(new ApiResponse<>(200, "Đổi mật khẩu thành công", null));
+    }
+
+    @PostMapping("/check-code")
+    public ResponseEntity checkCode(@RequestParam String code, @RequestParam String email) throws AppException {
+        System.out.println(code);
+        shopOwnerService.checkCode(code);
+        return ResponseEntity.ok(new ApiResponse<>(200, "Mã xác thực đã được kiểm tra", email));
+    }
+
+    @PostMapping("/save-response")
+    public ResponseEntity saveResponse(@RequestBody shop_report report){
+        shopOwnerReportRespository.saveResponse(report);
+        ApiResponse apiResponse= new ApiResponse<>(200, "success");
+        return ResponseEntity.ok(apiResponse);
+    }
 }
