@@ -105,5 +105,9 @@ public class AdminRepository extends AbstractRepository<Admin> implements IAdmin
     }
 
 
+    public List<Admin> searchAdminByEmail(String email) {
+        String sql = "select * from admin where admin_email like ?";
+        return super.findAll(sql, new AdminMapper(), "%" + email + "%");
+    }
 
 }
