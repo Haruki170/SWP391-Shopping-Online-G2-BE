@@ -20,4 +20,6 @@ public interface IAdminRepository {
     public int checkCodeAdmin(String code);
     public boolean updatePassword(String password,int id);
     public int checkLogin(String email, int role);
+    public List<Admin> searchAdminByEmail(String email);
+    public List<Admin> filterAdminByStatus(int status);
 }
