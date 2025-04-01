@@ -63,14 +63,7 @@ public class CustomerController {
         return ResponseEntity.ok(api);
     }
 
-    @PreAuthorize("hasAuthority('customer')")
-    @PostMapping("/change-password")
-    public ResponseEntity changePassword(@RequestBody Auth auth) throws AppException {
-        int id = tokenService.getIdfromToken();
-        customerService.updatePassword(auth, id);
-        ApiResponse<List<Customer>> api = new ApiResponse<>(200, "thanh cong", null);
-        return ResponseEntity.ok(api);
-    }
+
 
     @PostMapping("/insert-customer")
     public ResponseEntity insertCustomer(@RequestBody Customer customer) throws AppException {
