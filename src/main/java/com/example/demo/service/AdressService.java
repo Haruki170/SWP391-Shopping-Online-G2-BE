@@ -49,18 +49,7 @@ public class AdressService implements IAddressService {
         }
     }
 
-    @Override
-    public boolean deleteAddress(int userId, int addressId) throws AppException {
-        int check = addressRepository.checkAddressExist(addressId, userId);
-        if (check == 0) {
-            throw new AppException(ErrorCode.ADDRESS_INVALID);
-        }
-        boolean result = addressRepository.deleteAddress(addressId);
-        if (!result) {
-            throw new AppException(ErrorCode.SERVER_ERR);
-        }
-        return result;
-    }
+
 
     @Override
     public boolean updateAddress(int userId, Address address) throws AppException {
