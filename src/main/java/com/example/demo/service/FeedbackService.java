@@ -71,6 +71,17 @@ public class FeedbackService implements IFeedBackService {
         int result = feedBackRespotory.updateFeedback(feedback);
         return result > 0;
     }
-
+    public List<FeedBack> findLatestFeedbacksByProductId(int productId, int limit) {
+        return feedBackRespotory.findLatestFeedbacksByProductId(productId, limit);
+    }
+    public List<FeedBack> findAllByCustomerId(int customerId) {
+        return feedBackRespotory.findAllByCustomerId(customerId);
+    }
+    public long addFeedback(FeedBack feedback) {
+        return feedBackRespotory.saveFeedback(feedback);
+    }
+    public FeedBack findById(Long feedbackId) {
+        return feedBackRespotory.findById(feedbackId);
+    }
 
 }
