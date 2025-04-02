@@ -83,15 +83,7 @@ public class ShopOwnerService implements IShopOwnerService {
         shopOwner.setStatus(status);
         return shopOwnerRepository.updateStatus(id, status);
     }
-
-    @Override
-    public boolean updateIndentify(IdentifyDto identifyDto, String frontImage, String backImage, String province, String district, String ward) throws AppException {
-        boolean check = shopOwnerRepository.updateIdentify(identifyDto, frontImage, backImage,province,district,ward);
-        if (!check) {
-            throw new AppException(ErrorCode.SERVER_ERR);
-        }
-        return true;
-    }
+    
 
     @Override
     public boolean forgotPassword(String email) throws AppException {
