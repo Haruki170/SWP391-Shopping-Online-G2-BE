@@ -65,4 +65,8 @@ public class VoucherService implements IVoucherService {
         }
         return voucherRepository.delete(id);
     }
+    @Override
+    public List<Voucher> searchVouchers(String code, Integer shopId, Double minDiscount, Double maxDiscount, String startDate, String endDate) {
+        return voucherRepository.searchVouchers(code, shopId, minDiscount, maxDiscount, startDate, endDate);
+    }
 }
