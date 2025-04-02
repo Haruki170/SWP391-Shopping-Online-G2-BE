@@ -62,7 +62,24 @@ public class ShopController {
         ApiResponse<String> apiResponse = new ApiResponse(200, "success", shop);
         return ResponseEntity.ok(apiResponse);
     }
-    
+
+    @GetMapping("/detail")
+    public ResponseEntity detailShop() throws AppException {
+        int id = token.getIdfromToken();
+        int shopId = shopService.getIdByOwnerId(id);
+        Shop shop = shopService.getShopDetails(shopId);
+        ApiResponse<String> apiResponse = new ApiResponse(200, "success", shop);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @PostMapping("/update-detail")
+    public ResponseEntity updateShop(@RequestParam("data") String data, @RequestParam(value = "logo", required = false) MultipartFile file) throws IOException, AppException {
+        Shop shop = jacksonObjectMapper.readValue(data, Shop.class);
+        shopService.updateShop(shop, file);
+        ApiResponse<String> apiResponse = new ApiResponse(200, "success", null);
+        return ResponseEntity.ok(apiResponse);
+
+    }
 
     @PostMapping("/update-address")
     public ResponseEntity updateAdress(@RequestBody List<ShopAddress> shop) throws IOException, AppException {
