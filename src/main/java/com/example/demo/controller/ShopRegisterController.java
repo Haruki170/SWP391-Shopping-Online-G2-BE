@@ -58,7 +58,19 @@ public class ShopRegisterController {
         ApiResponse<String> apiResponse = new ApiResponse(200, "sucess", list);
         return ResponseEntity.ok(apiResponse);
     }
-    
+    @PostMapping("/mail")
+    public ResponseEntity mail(@RequestBody Mail mail) {
+        shopRegisterService.sendMail(mail.getEmail(), mail.getSubject(), mail.getContent());
+        ApiResponse<String> apiResponse = new ApiResponse(200, "sucess", null);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @PostMapping("/send-mail")
+    public ResponseEntity sendMail(@RequestBody Mail mail) {
+        shopRegisterService.sendMail(mail.getEmail(), mail.getSubject(), mail.getContent());
+        ApiResponse<String> apiResponse = new ApiResponse(200, "sucess", null);
+        return ResponseEntity.ok(apiResponse);
+    }
     @PutMapping("/update/{id}")
     public ResponseEntity update(@PathVariable int id) {
         shopRegisterRespository.changeStatus(id);
