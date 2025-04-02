@@ -174,7 +174,7 @@ public class OrderService implements IOrderService {
         if(shop.getAutoShipCost() == 0){
             return 0;
         }
-        else{
+/*        else{
             double totalWeight = orderList.stream()
                     .mapToDouble(order -> {
                         Product p = order.getProduct();
@@ -184,8 +184,9 @@ public class OrderService implements IOrderService {
                     .sum();
             int cost = shopRespository.getShipCost(totalWeight, shop.getId());
             return cost;
-        }
+        }*/
     }
+
 
     private int calulateTotalCost(List<OrderList> orderList){
         int total = 0;

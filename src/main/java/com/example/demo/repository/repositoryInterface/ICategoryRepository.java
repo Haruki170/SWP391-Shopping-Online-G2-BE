@@ -27,4 +27,5 @@ public interface ICategoryRepository {
     List<ProductCategoryDto> getProductsByCategoryId(int categoryId);
     int checkCategoryStatus(int categoryId);
     List<Category> getSubcategoriesByParentId(int parentId);
+    List<Category> searchCategories(String name, Integer status, Integer parent);
 }
