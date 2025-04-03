@@ -2,7 +2,6 @@ package com.example.demo.mapper;
 
 import com.example.demo.entity.Shipper;
 import java.sql.ResultSet;
-
 public class ShipperMapper implements RowMapper<Shipper> {
     @Override
     public Shipper mapRow(ResultSet rs) {
