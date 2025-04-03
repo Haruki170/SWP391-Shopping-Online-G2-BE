@@ -57,7 +57,11 @@ public class BannerController {
         }
     }
 
-    
+    @PutMapping("/{id}")
+    public ResponseEntity<Banner> updateBanner(@PathVariable int id, @RequestBody Banner banner) {
+        Banner updatedBanner = bannerService.updateBanner(id, banner);
+        return updatedBanner != null ? ResponseEntity.ok(updatedBanner) : ResponseEntity.notFound().build();
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBanner(@PathVariable int id) {
