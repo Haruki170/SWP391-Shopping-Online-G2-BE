@@ -99,7 +99,18 @@ public class CustomerController {
         return ResponseEntity.ok(new ApiResponse<>(200, "Email khôi phục mật khẩu đã được gửi", email));
     }
 
+    @PostMapping("/change-password-by-code")
+    public ResponseEntity changePasswordByCode(@RequestBody ForgotPasswordDto forgotPasswordDto) throws AppException {
+        customerService.resetPassword(forgotPasswordDto.getEmail(), forgotPasswordDto.getNewPassword());
+        return ResponseEntity.ok(new ApiResponse<>(200, "Đổi mật khẩu thành công", null));
+    }
 
+    @PostMapping("/check-code")
+    public ResponseEntity checkCode(@RequestParam String code, @RequestParam String email) throws AppException {
+        System.out.println(code);
+        customerService.checkCode(code);
+        return ResponseEntity.ok(new ApiResponse<>(200, "Mã xác thực đã được kiểm tra", null));
+    }
 
 
 
