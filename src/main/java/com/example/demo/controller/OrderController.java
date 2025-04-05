@@ -67,7 +67,27 @@ public class OrderController {
 
 
     @GetMapping("/get-all")
+    public ResponseEntity<ApiResponseWithPage<Order>> getAllOrder(
+            @RequestParam int page,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String date) throws AppException {
+        int id = token.getIdfromToken();
+        int shopId = shopService.getIdByOwnerId(id);
 
+        List<Integer> statuses = new ArrayList<>();
+        if (status != null && !status.isEmpty()) {
+            statuses = Arrays.stream(status.split(","))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+        }
+        List<Order> list = orderService.getAllOrdersByShop(shopId, page, startDate, endDate,statuses);
+        int totalProduct = orderService.countOrder(shopId, startDate, endDate,statuses);
+        int totalPage = (int) Math.ceil((double) totalProduct / 4);
+        ApiResponseWithPage apiResponse = new ApiResponseWithPage<>(200, "success", list, totalPage);
+        return ResponseEntity.ok(apiResponse);
+    }
     @GetMapping("/getAll")
     public ResponseEntity<ApiResponse> getAllOrderByShop() throws AppException {
         int id = token.getIdfromToken();
