@@ -46,5 +46,15 @@ public class ShipperController {
         return ResponseEntity.ok(new ApiResponse<>(200, "Shipper deleted successfully", null));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<Shipper>>> searchShippersByEmail(@RequestParam String email) {
+        List<Shipper> shippers = shipperService.searchShippersByEmail(email);
+        return ResponseEntity.ok(new ApiResponse<>(200, "Success", shippers));
+    }
 
+    @GetMapping("/filter")
+    public ResponseEntity<ApiResponse<List<Shipper>>> filterShippersByStatus(@RequestParam int status) {
+        List<Shipper> shippers = shipperService.filterShippersByStatus(status);
+        return ResponseEntity.ok(new ApiResponse<>(200, "Success", shippers));
+    }
 }
