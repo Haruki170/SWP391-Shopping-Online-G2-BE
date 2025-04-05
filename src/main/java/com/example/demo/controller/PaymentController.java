@@ -30,32 +30,7 @@ public class PaymentController {
         return ResponseEntity.ok(api);
     }
 
-    @GetMapping("/vnpay-callback")
-    public void handleVnpayCallback(@RequestParam Map<String, String> requestParams, HttpServletResponse response) throws Exception {
-        // Các tham số có trong requestParams
-        String amount = requestParams.get("vnp_Amount");
-        String vnpTxnRef = requestParams.get("vnp_TxnRef");
-        String code = requestParams.get("vnp_ResponseCode");
-        String orderInfo = requestParams.get("vnp_OrderInfo");
-        // Xử lý xác thực hash và kiểm tra các thông tin cần thiết
-        if(orderInfo.equals("pay")){
-            if(code.equals("00")){
-                shopTransactionService.handleTransactionPay(vnpTxnRef);
-            }
-            response.sendRedirect("http://localhost:5173/seller/transaction");
-        }
-        else{
-            String returnUrl = paymentService.savePaymentVnp(vnpTxnRef, amount, code);
 
-            if (returnUrl != null) {
-                response.sendRedirect(returnUrl);
-            } else {
-                response.sendRedirect("http://localhost:5173/payment-err");
-            }
-        }
-
-
-    }
 
     @PostMapping("/create-cod")
     public ResponseEntity createCodPayment(@RequestBody PaymentDto paymentDto, HttpServletResponse response) throws Exception {
