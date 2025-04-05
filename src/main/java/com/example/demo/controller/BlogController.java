@@ -35,11 +35,8 @@ public class BlogController {
         return ResponseEntity.ok(new ApiResponse(200, "success", null));
     }
 
-    @PutMapping("/{shopId}")
-    public ResponseEntity<ApiResponse> updateBlog(@RequestBody Blog blog) {
-        blogRepository.save("UPDATE blog SET title = ?, content = ? WHERE id = ?", blog.getTitle(), blog.getContent(), blog.getId());
-        return ResponseEntity.ok(new ApiResponse(200, "success", null));
-    }
+
+
     @DeleteMapping("/{shopId}")
     public ResponseEntity<ApiResponse> deleteBlog(@PathVariable Long id) {
         blogRepository.save("DELETE FROM blog WHERE id = ?", id);
