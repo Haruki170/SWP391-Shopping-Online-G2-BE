@@ -33,14 +33,5 @@ public class ShipperRepository extends AbstractRepository<Shipper> {
         String sql = "DELETE FROM shipper WHERE shipper_id = ?";
         return super.save(sql, id);
     }
-
-    public List<Shipper> searchShipperByEmail(String email) {
-        String sql = "SELECT * FROM shipper WHERE shipper_email LIKE ?";
-        return super.findAll(sql, new ShipperMapper(), "%" + email + "%");
-    }
-
-    public List<Shipper> filterShippersByStatus(int status) {
-        String sql = "SELECT * FROM shipper WHERE shipper_status = ?";
-        return super.findAll(sql, new ShipperMapper(), status);
-    }
+    
 }
