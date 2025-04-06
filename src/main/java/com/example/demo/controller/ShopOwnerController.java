@@ -51,6 +51,23 @@ public class ShopOwnerController {
     }
 
 
+    @PostMapping("/insert-shopOwner")
+    public ResponseEntity insertShopOwner(@RequestBody ShopOwner shopOwner) throws AppException {
+        try {
+            boolean isInserted = shopOwnerService.addShopOwner(shopOwner.getId(), shopOwner);
+            if (isInserted) {
+                return ResponseEntity.ok(new ApiResponse<>(200, "Thêm chủ cửa hàng thành công", shopOwner));
+            } else {
+                return ResponseEntity.badRequest().body(new ApiResponse<>(400, "Thêm chủ cửa hàng thất bại", null));
+            }
+        } catch (AppException e) {
+            if (e.getErrorCode() == ErrorCode.USER_EXIST) {
+                return ResponseEntity.badRequest().body(new ApiResponse<>(400, "Email đã tồn tại", null));
+            } else {
+                return ResponseEntity.badRequest().body(new ApiResponse<>(400, e.getMessage(), null));
+            }
+        }
+    }
     @PutMapping("/updateStatus/{id}")
     public ResponseEntity updateStatus(@PathVariable int id, @RequestBody ShopOwner shopOwner) throws AppException {
         // Cập nhật trạng thái của chủ cửa hàng
