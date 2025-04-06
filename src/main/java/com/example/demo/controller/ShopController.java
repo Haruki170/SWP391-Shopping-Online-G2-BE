@@ -157,4 +157,26 @@ public class ShopController {
         }
     }
 
+
+    @GetMapping("/get/{id}")
+    public ResponseEntity getShopAdmin(@PathVariable int id) throws AppException {
+        Shop shop = shopService.getShopByAdmin(id);
+        ApiResponse<String> apiResponse = new ApiResponse(200, "success", shop);
+        return ResponseEntity.ok(apiResponse);
+    }
+    @PutMapping("/status/{id}")
+    public ResponseEntity changeStatus(@PathVariable int id){
+        shopRespository.changeStatus(id);
+        ApiResponse<String> apiResponse = new ApiResponse(200, "success", null);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/count-active")
+    public ResponseEntity getCount (){
+            int count = shopRespository.selectCountActive();
+        System.out.println(count);
+            ApiResponse apiResponse = new ApiResponse(200, "success", count);
+            return ResponseEntity.ok(apiResponse);
+    }
+
 }
