@@ -34,6 +34,10 @@ public class ShipperRepository extends AbstractRepository<Shipper> {
         return super.save(sql, id);
     }
 
+    public List<Shipper> searchShipperByEmail1(String email) {
+        String sql = "SELECT * FROM shipper WHERE shipper_email LIKE ?";
+        return super.findAll(sql, new ShipperMapper(), "%" + email + "%");
+    }
     public List<Shipper> searchShipperByEmail(String email) {
         String sql = "SELECT * FROM shipper WHERE shipper_email LIKE ?";
         return super.findAll(sql, new ShipperMapper(), "%" + email + "%");
