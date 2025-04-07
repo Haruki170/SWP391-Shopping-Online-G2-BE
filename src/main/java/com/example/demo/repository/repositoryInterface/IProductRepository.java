@@ -29,6 +29,6 @@ public interface IProductRepository {
     List<Product> findProductsByProvince(String province);
 
     public List<Map<String, Object>> findByNameContaining(String productName);
-    List<Product> findByFilters(int category, String province, int rating, double price);
+    public List<Product> findByFilters(int category, String province, int minRating, double minPrice, String search, String sortOrder, int page, int size);
     public Product findByIdAll(int id);
 }

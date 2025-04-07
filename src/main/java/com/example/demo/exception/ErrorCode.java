@@ -7,6 +7,13 @@ import lombok.Getter;
 public enum ErrorCode {
     CODE_NOT_FOUND(400, "Mã không tồn tại"),
     USER_EXIST(400, "Email đã tồn tại"),
+    SHIPPER_EXIST(400, "SHIPPER đã tồn tại"),
+    SHIPPER_NOTFOUND(400, "SHIPPER không tồn tại"),
+    SHIPPER_PHONE_EXIST(400, "Số điện thoại đã tồn tại"),
+    SHIPPER_IDENTITY_EXIST(400, "CCCD đã tồn tại"),
+    SHIPPER_PHONE_EMPTY(400, "Không được để trống Số điện thoại"),
+    SHIPPER_IDENTITY_EMPTY(400, "Không được để trống CCCD"),
+    SHIPPER_NOT_ACTIVE(400, "Chưa kích hoạt"),
     USER_EMAIL_EMPTY(400, "Không được để trống email"),
     USER_PASSWORD_EMPTY(400, "Không được để trống password"),
     SERVER_ERR(500, "Lỗi server"),

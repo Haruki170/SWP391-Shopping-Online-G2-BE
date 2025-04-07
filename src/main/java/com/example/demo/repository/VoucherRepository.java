@@ -18,7 +18,7 @@ public class VoucherRepository extends AbstractRepository<Voucher> implements IV
 
     @Override
     public Voucher findById(int id) {
-        String sql = "select * from voucher where id = ?";
+        String sql = "select * from voucher where voucher_id = ?";
         Voucher voucher = super.findOne(sql, new VoucherMapper(), id);
         return voucher;
     }
@@ -29,18 +29,22 @@ public class VoucherRepository extends AbstractRepository<Voucher> implements IV
         return  super.findAll(sql, new VoucherMapper(), id);
 
     }
-
+    @Override
+    public List<Voucher> findValidByShopId(int shopId) {
+        String sql = "SELECT * FROM voucher WHERE shop_id = ? AND start_date <= NOW() AND end_date >= NOW() AND quantity > 0";
+        return  super.findAll(sql, new VoucherMapper(), shopId);
+    }
     @Override
     public boolean insert(Voucher voucher) {
-        String sql = "insert into voucher(code, description, discount_amount, min_order_amount, start_date, end_date, quantity) values(?,?,?,?,?,?,?) ";
-        super.save(sql, voucher.getCode(), voucher.getDescription(), voucher.getDiscountAmount(),voucher.getMinOrderAmount(), voucher.getStartDate(), voucher.getEndDate(), voucher.getQuantity());
+        String sql = "insert into voucher(code, description, discount_amount, min_order_amount, start_date, end_date, quantity,shop_id) values(?,?,?,?,?,?,?,?) ";
+        super.save(sql, voucher.getCode(), voucher.getDescription(), voucher.getDiscountAmount(),voucher.getMinOrderAmount(), voucher.getStartDate(), voucher.getEndDate(), voucher.getQuantity(),voucher.getShop().getId());
         return true;
     }
 
     @Override
     public boolean update(Voucher voucher) {
-        String sql = "update voucher set description=?, discount_amount=?, start_date=?, end_date=? where voucher_id=?";
-        super.save(sql, voucher.getDescription(), voucher.getDiscountAmount(), voucher.getStartDate(), voucher.getEndDate(), voucher.getId());
+        String sql = "update voucher set description=?, discount_amount=?, min_order_amount=?,start_date=?, end_date=?, quantity=? where voucher_id=?";
+        super.save(sql, voucher.getDescription(), voucher.getDiscountAmount(),voucher.getMinOrderAmount(), voucher.getStartDate(), voucher.getEndDate(),voucher.getQuantity(), voucher.getId());
         return true;
     }
 

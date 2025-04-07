@@ -21,7 +21,7 @@ public class ProductAddonMapper implements RowMapper<ProductAddOn> {
 
             // Thiết lập các giá trị khác
             productAddOn.setName(rs.getString("product_addon_name"));
-            productAddOn.setPrice(rs.getDouble("product_addon_price"));
+            productAddOn.setPrice(rs.getInt("product_addon_price"));
 
         } catch (SQLException e) {
             e.printStackTrace();

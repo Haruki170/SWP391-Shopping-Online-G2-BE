@@ -2,8 +2,10 @@ package com.example.demo.service;
 
 import com.example.demo.dto.Auth;
 import com.example.demo.dto.AuthResponse;
+import com.example.demo.dto.ShipperAuth;
 import com.example.demo.entity.Admin;
 import com.example.demo.entity.Customer;
+import com.example.demo.entity.Shipper;
 import com.example.demo.entity.ShopOwner;
 import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
@@ -11,6 +13,7 @@ import com.example.demo.jwt.Token;
 import com.example.demo.repository.ShopOwnerRepository;
 import com.example.demo.repository.repositoryInterface.IAdminRepository;
 import com.example.demo.repository.repositoryInterface.IAuthRepository;
+import com.example.demo.repository.repositoryInterface.IShipperAuth;
 import com.example.demo.repository.repositoryInterface.IShopOwnerRepository;
 import com.example.demo.service.ServiceInterface.IAdminService;
 import com.example.demo.service.ServiceInterface.IAuthSerive;
@@ -31,6 +34,8 @@ public class AuthService implements IAuthSerive {
     IShopOwnerRepository shopOwnerRepository;
     @Autowired
     IAdminRepository adminRepository;
+    @Autowired
+    IShipperAuth shipperAuthRepository;
 
     @Override
     public AuthResponse customerLogin(Auth auth) throws Exception {
@@ -177,5 +182,60 @@ public class AuthService implements IAuthSerive {
                 }
             }
         }
+    }
+    @Override
+    public String ShipperRegister(ShipperAuth auth) throws AppException {
+        if (auth.getPhone() == null || auth.getPhone().isEmpty()) {
+            throw new AppException(ErrorCode.SHIPPER_PHONE_EMPTY);
+        }
+        if (auth.getPassword() == null || auth.getPassword().isEmpty()) {
+            throw new AppException(ErrorCode.USER_PASSWORD_EMPTY);
+        }
+        if (auth.getIdentity() == null || auth.getIdentity().isEmpty()) {
+            throw new AppException(ErrorCode.SHIPPER_IDENTITY_EMPTY);
+        }
+
+        int exits = authRepository.CheckShipperInfo(auth.getPhone(), auth.getIdentity());
+        if (exits == 0) {
+            String bpass = passwordEncoder.encode(auth.getPassword());
+            if (authRepository.ShipperRegister(auth.getName(), auth.getPhone(), auth.getIdentity(), bpass)) {
+                return "Success";
+            } else {
+                throw new AppException(ErrorCode.SERVER_ERR);
+            }
+        } else {
+            throw new AppException(ErrorCode.SHIPPER_EXIST);
+        }
+    }
+
+    @Override
+    public AuthResponse ShipperLogin(ShipperAuth auth) throws Exception {
+        String token = null;
+        if (auth.getPhone() == null || auth.getPhone().isEmpty()) {
+            throw new AppException(ErrorCode.SHIPPER_PHONE_EMPTY);
+        }
+        if (shipperAuthRepository.checkShipperPhone(auth.getPhone()) == 0) {
+            throw new AppException(ErrorCode.SHIPPER_NOTFOUND);
+        }
+        if (auth.getPassword() == null || auth.getPassword().isEmpty()) {
+            throw new AppException(ErrorCode.USER_PASSWORD_EMPTY);
+        }
+
+        Shipper shipper = shipperAuthRepository.shipperLogin(auth.getPhone());
+        if (shipper == null) {
+            throw new AppException(ErrorCode.USER_NOTFOUND);
+        }
+
+        if(shipper.getStatus() == 1){
+            throw new AppException(ErrorCode.SHIPPER_NOT_ACTIVE);
+        }
+
+        if (!passwordEncoder.matches(auth.getPassword(), shipper.getPassword())) {
+            throw new AppException(ErrorCode.USER_PASSWORD_WRONG);
+        }
+
+        token = jwtToken.generateToken(shipper.getPhone(), "shipper");
+
+        return new AuthResponse(token, "shipper",1,auth.getPhone());
     }
 }

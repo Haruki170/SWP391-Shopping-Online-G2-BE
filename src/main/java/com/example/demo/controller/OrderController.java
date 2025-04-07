@@ -122,6 +122,13 @@ public class OrderController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @PutMapping("/update-ship-cost")
+    public ResponseEntity<ApiResponse> updateShipCost(@RequestParam int orderId, @RequestParam int shipCost) throws AppException {
+        orderService.updateShipCost(orderId, shipCost);
+        ApiResponse apiResponse = new ApiResponse(200, "success", null);
+        return ResponseEntity.ok(apiResponse);
+    }
+
     @GetMapping("/get-success-detail")
     public ResponseEntity<ApiResponse> getProductSuccess(){
         int id =token.getIdfromToken();

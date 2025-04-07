@@ -101,7 +101,7 @@ public class ShopRespository extends AbstractRepository<Shop> implements IShopRe
             double totalProductRating = 0;
             int productCountWithRatings = 0;
             int totalFeedback = 0;
-            String productSql = "SELECT * FROM product WHERE shop_id = " + id;
+            String productSql = "SELECT * FROM product WHERE status = 1 and shop_id = " + id;
             ResultSet productResultSet = statement.executeQuery(productSql);
             List<Product> products = new ArrayList<>();
             while (productResultSet.next()) {

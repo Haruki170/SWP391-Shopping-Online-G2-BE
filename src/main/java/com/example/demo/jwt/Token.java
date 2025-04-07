@@ -11,6 +11,7 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -103,9 +104,15 @@ public class Token {
     }
 
     public int getIdfromToken() {
-        CustomUserdetail userdetail = (CustomUserdetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int id = userdetail.getId();
-        return id;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Authentication: " + auth);
+        if (auth != null) {
+            Object principal = auth.getPrincipal();
+            System.out.println("Principal: " + principal);
+            CustomUserdetail userdetail = (CustomUserdetail) principal;
+            return userdetail.getId();
+        }
+        throw new IllegalStateException("No authenticated user found");
     }
 
     public String getToken(String token) {

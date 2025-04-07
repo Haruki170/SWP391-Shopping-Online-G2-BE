@@ -1,5 +1,8 @@
 package com.example.demo.dto;
 
+
+import com.example.demo.entity.Order;
+import com.example.demo.entity.Shipper;
 import com.example.demo.entity.Shop;
 import com.example.demo.entity.Voucher;
 import com.example.demo.response.OrderList;
@@ -12,12 +15,9 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class OrderDto {
-    private Shop shop;
-    private List<OrderList> orderList;
-    private int shipCost;
-    private int costStatus;
-    private int totalCost;
-    private List<Voucher> voucherList;
-    private int saleCost;
+public class ShipperOrderDto {
+    private Shipper shipper;
+    private Order order;
+    private int status;
+    private String note;
 }

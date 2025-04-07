@@ -28,13 +28,6 @@ public class AddressController {
         return ResponseEntity.ok(api);
     }
 
-    @GetMapping("/get-list")
-    public ResponseEntity getList() throws AppException {
-        int id = token.getIdfromToken();
-        List<Address> list = addressService.getAllAddressByUserId(id);
-        ApiResponse<List<Address>> api = new ApiResponse<>(200,"success",list);
-        return ResponseEntity.ok(api);
-    }
 
     @GetMapping("/get-address/{id}")
     public ResponseEntity getAddress(@PathVariable int id) throws AppException {

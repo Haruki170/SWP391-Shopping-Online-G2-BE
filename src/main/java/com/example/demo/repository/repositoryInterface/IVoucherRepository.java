@@ -12,4 +12,5 @@ public interface IVoucherRepository {
     public boolean update(Voucher voucher);
     public boolean delete(int id);
     public int checkExist(String code);
+    public List<Voucher> findValidByShopId(int shopId);
 }

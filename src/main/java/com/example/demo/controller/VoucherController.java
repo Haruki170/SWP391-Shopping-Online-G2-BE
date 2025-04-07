@@ -1,10 +1,12 @@
 package com.example.demo.controller;
 
+import com.example.demo.entity.Shop;
 import com.example.demo.entity.Voucher;
 import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
 import com.example.demo.jwt.Token;
 import com.example.demo.response.ApiResponse;
+import com.example.demo.service.ShopService;
 import com.example.demo.service.VoucherService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,16 +23,23 @@ public class VoucherController {
     Token tokenService;
     @Autowired
     VoucherService voucherService;
+    @Autowired
+    ShopService shopService;
 
     @GetMapping("/get-all")
-    public ResponseEntity getAll() throws Exception {
-        List<Voucher> list = voucherService.findAllVoucher();
-        ApiResponse<List<Voucher>> api = new ApiResponse<>(200, "thanh cong", list);
-        return ResponseEntity.ok(api);
+    public ResponseEntity<ApiResponse<List<Voucher>>> getAll() throws Exception {
+        int shopOwnerId = tokenService.getIdfromToken(); // Get authenticated user's ID
+        Shop shop = shopService.getShopByOwnerId(shopOwnerId); // Get shop by owner ID
+
+        List<Voucher> list = voucherService.findVouchersByShopId(shop.getId());
+        return ResponseEntity.ok(new ApiResponse<>(200, "Thành công", list));
     }
 
     @PostMapping("/add-voucher")
     public ResponseEntity addVoucher(@RequestBody Voucher voucher) throws Exception {
+        int shopOwnerId = tokenService.getIdfromToken();
+        Shop shop = shopService.getShopByOwnerId(shopOwnerId);
+        voucher.setShop(shop);
         voucherService.addVoucher(voucher);
         return ResponseEntity.ok(new ApiResponse<>(200, "thanh cong", null));
     }
@@ -46,5 +55,10 @@ public class VoucherController {
         System.out.println(id);
         voucherService.deleteVoucher(id);
         return ResponseEntity.ok(new ApiResponse<>(200, "Xóa voucher thành công", null));
+    }
+    @GetMapping("/get-valid")
+    public ResponseEntity<ApiResponse<List<Voucher>>> getValidVouchers(@RequestParam("shopId") int shopId) throws Exception {
+        List<Voucher> validVouchers = voucherService.findValidVouchersByShopId(shopId);
+        return ResponseEntity.ok(new ApiResponse<>(200, "Lấy danh sách voucher còn hiệu lực thành công", validVouchers));
     }
 }

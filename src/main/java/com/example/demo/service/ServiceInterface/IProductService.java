@@ -29,5 +29,5 @@ public interface IProductService {
     public boolean updateStatus(int id, int status);
     public Product findIDProduct2(int id);
     public Product getOneProduct(int id);
-    public List<Product> filterProducts(int category, String province, int rating, double price);
+    public List<Product> filterProducts(int category, String province, int rating, double price, String search, String sortOrder, int page, int size);
 }

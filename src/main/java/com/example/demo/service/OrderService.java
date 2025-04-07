@@ -63,7 +63,7 @@ public class OrderService implements IOrderService {
 
             // Bước 4: Đặt danh sách OrderList vào OrderDTO
             getOrderResponse.setOrderList(orderListsForShop);
-            getOrderResponse.setVoucherList(voucherRepository.findByShopId(shop.getId()));
+            getOrderResponse.setVoucherList(voucherRepository.findValidByShopId(shop.getId()));
             // Bước 5: Tính phí vận chuyển (giả định bạn có logic để tính shipCost)
             int shipcost = calculateShipCostForShop(orderListsForShop, shop);
             int totalCost = calulateTotalCost(orderListsForShop);
@@ -166,6 +166,11 @@ public class OrderService implements IOrderService {
     @Override
     public int countOrder(int shop_id, String startDate, String endDate, List<Integer> statuses) throws AppException {
         return orderRespository.countOrdersByShop(shop_id,startDate, endDate, statuses);
+    }
+
+    @Override
+    public void updateShipCost(int orderId, int shipCost) {
+        orderRespository.updateOrderShipping(orderId, shipCost);
     }
 
     // phương thức tính phí vận chuyển cho mỗi Shop

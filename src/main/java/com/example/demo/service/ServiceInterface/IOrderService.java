@@ -19,4 +19,6 @@ public interface IOrderService {
     public Order getOrderById(int order_id) throws AppException;
     public boolean updateOrder(int orderId, int status, int type) throws AppException;
     public int countOrder(int shop_id,String startDate, String endDate,List<Integer> statuses) throws AppException;
+
+    void updateShipCost(int orderId, int shipCost);
 }

@@ -19,7 +19,7 @@ public class SendMail {
 
     public boolean sentMailRegister(String to, String subject, String content) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("trungnthe173337@fpt.edu.vn");
+        message.setFrom("pna2906@gmail.com");
         message.setTo(to);
         message.setSubject(subject);
         message.setText(content);
@@ -38,7 +38,7 @@ public class SendMail {
             content = content.replace("{{password}}", password);
 
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-            helper.setFrom("hieunthe176206@fpt.edu.vn");
+            helper.setFrom("pna2906@gmail.com");
             helper.setTo(to);
             helper.setSubject(subject);
             // Gửi nội dung HTML

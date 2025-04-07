@@ -71,11 +71,19 @@ public class ProductController {
 
     @GetMapping("/getAll")
     public ResponseEntity<ApiResponse<List<Product>>> getAllProducts() throws AppException {
-        //get shop ip
         int id = token.getIdfromToken();
         Shop shop = shopService.getShopByOwnerId(id);
 
-        List<Product> products = productService.findAllProducts(shop.getId());
+        List<Product> products;
+        if (shop != null) {
+            // Shop owner sees all their products
+            products = productService.findAllProducts(shop.getId());
+        } else {
+            // Regular users only see active products (status = 1)
+            products = productService.findAllProducts(shop.getId()).stream()
+                    .filter(p -> p.getStatus() == 1)
+                    .collect(Collectors.toList());
+        }
         return ResponseEntity.ok(new ApiResponse<>(200, "Products retrieved successfully", products));
     }
 
@@ -139,22 +147,22 @@ public class ProductController {
     }
     @PutMapping("/updateStatus")
     public ResponseEntity<ApiResponse<Product>> updateProductStatusProdcut(
-            @RequestParam int productId,@RequestParam int status
-            ) {
+            @RequestParam int productId,
+            @RequestParam int status) {
 
-        System.out.println(productId);
-
-        // Check if the product exists
-        Product existingProduct = productRepository.findById2(productId);//tach
-
-
+        Product existingProduct = productRepository.findById2(productId);
         if (existingProduct == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ApiResponse<>(404, "Product not found", null));
         }
 
+        // Only allow transitions between 1 and 2 (active <-> ceased)
+        if (status != 1 && status != 2) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse<>(400, "Invalid status transition", null));
+        }
+
         existingProduct.setStatus(status);
-        // Update the product
         Product updatedProduct = productService.updateProductStatus(existingProduct);
         return ResponseEntity.ok(new ApiResponse<>(200, "Product updated successfully", updatedProduct));
     }
@@ -173,12 +181,16 @@ public class ProductController {
 
     @GetMapping("/filter")
     public ResponseEntity<ApiResponse<List<Product>>> filterProducts(
-            @RequestParam("category") int category,
-            @RequestParam("province") String province,
-            @RequestParam("rating") int rating,
-            @RequestParam("price") int price) {
+            @RequestParam(value = "category", defaultValue = "0") int category,
+            @RequestParam(value = "province", defaultValue = "") String province,
+            @RequestParam(value = "rating", defaultValue = "0") int rating,
+            @RequestParam(value = "price", defaultValue = "0") double price,
+            @RequestParam(value = "search", defaultValue = "") String search,
+            @RequestParam(value = "sort", defaultValue = "asc") String sortOrder, // "asc" or "desc" for price
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "16") int size) {
 
-        List<Product> products = productService.filterProducts(category, province, rating, price);
+        List<Product> products = productService.filterProducts(category, province, rating, price, search, sortOrder, page, size);
         if (products.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -233,8 +245,7 @@ public class ProductController {
     public ResponseEntity<ApiResponse<Product>> updateProductStatus(@RequestParam int id,
                                                                     @RequestParam int status,
                                                                     @RequestBody(required = false) shop_report report) {
-        System.out.println(report);
-        System.out.println("s" +status);
+        int idUser = token.getIdfromToken();
         if(report != null ){
             shopOwnerReportRespository.insertWithResponse(report,report.getId());
         }

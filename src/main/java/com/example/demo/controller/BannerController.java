@@ -58,9 +58,30 @@ public class BannerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Banner> updateBanner(@PathVariable int id, @RequestBody Banner banner) {
-        Banner updatedBanner = bannerService.updateBanner(id, banner);
-        return updatedBanner != null ? ResponseEntity.ok(updatedBanner) : ResponseEntity.notFound().build();
+    public ResponseEntity<Banner> updateBanner(
+            @PathVariable int id,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @RequestParam("description") String description
+    ) {
+        try {
+            Banner existingBanner = bannerService.getBannerById(id);
+            if (existingBanner == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            existingBanner.setDescription(description);
+            if (image != null && !image.isEmpty()) {
+                String imageUrl = fileUpload.uploadImage(image);
+                existingBanner.setImage(imageUrl);
+            }
+
+            Banner updatedBanner = bannerService.updateBanner(id, existingBanner);
+            return ResponseEntity.ok(updatedBanner);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     @DeleteMapping("/{id}")

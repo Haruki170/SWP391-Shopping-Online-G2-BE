@@ -24,13 +24,18 @@ public class VoucherService implements IVoucherService {
     public List<Voucher> findAllVoucher() throws AppException {
         return voucherRepository.findAll();
     }
-
+    @Override
+    public List<Voucher> findValidVouchersByShopId(int shopId) {
+        return voucherRepository.findValidByShopId(shopId);
+    }
     @Override
     public Voucher findById(int id) throws AppException {
         Voucher voucher = voucherRepository.findById(id);
         return voucher;
     }
-
+    public List<Voucher> findVouchersByShopId(int shopId) {
+        return voucherRepository.findByShopId(shopId);
+    }
     @Override
     public boolean addVoucher(Voucher voucher) throws AppException {
         if (voucherRepository.checkExist(voucher.getCode()) > 0) {

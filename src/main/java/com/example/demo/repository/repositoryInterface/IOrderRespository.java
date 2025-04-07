@@ -13,7 +13,7 @@ public interface IOrderRespository {
     List<Order> getAllOrdersByShop(int shopId);
 
     int  getQuantity(int shopId);
-
+    boolean updateOrderShipping(int orderId, int ship);
     public boolean deleteOrder(int id);
     public boolean updateOrderStatus(int orderId, int status);
     public boolean updateOrderPayment(int orderId, int status);

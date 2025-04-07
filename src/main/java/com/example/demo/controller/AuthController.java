@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.Auth;
 import com.example.demo.dto.AuthResponse;
 import com.example.demo.dto.CheckLoginDto;
+import com.example.demo.dto.ShipperAuth;
 import com.example.demo.entity.Shop;
 import com.example.demo.entity.User;
 import com.example.demo.exception.AppException;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "http://localhost:5175")
 public class AuthController {
     @Autowired
     IAuthSerive authSerive;
@@ -69,4 +71,18 @@ public class AuthController {
         ApiResponse<AuthResponse> response = new ApiResponse<>(200,"success",auths);
         return ResponseEntity.ok().body(response);
     }
+
+    @PostMapping("/shipper/sign-up")
+    public ResponseEntity ShipperSignUp(@RequestBody ShipperAuth user) throws AppException {
+        String mess = authSerive.ShipperRegister(user);
+        ApiResponse<String> response = new ApiResponse<>(200,mess,null);
+        return ResponseEntity.ok().body(response);
+    }
+    @PostMapping("/shipper/sign-in")
+    public ResponseEntity ShipperSignIn(@RequestBody ShipperAuth user) throws Exception {
+        AuthResponse auth = authSerive.ShipperLogin(user);
+        ApiResponse<AuthResponse> response = new ApiResponse<>(200,"success",auth);
+        return ResponseEntity.ok().body(response);
+    }
+
 }

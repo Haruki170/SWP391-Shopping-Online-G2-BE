@@ -13,7 +13,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         // Cấu hình CORS để cho phép frontend từ localhost:5173
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173") // Cấu hình CORS cho phép WebSocket
+                .allowedOrigins("http://localhost:5173","http://localhost:5175") // Cấu hình CORS cho phép WebSocket
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)

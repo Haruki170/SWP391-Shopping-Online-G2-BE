@@ -38,51 +38,25 @@ public class PaymentService {
     public String savePaymentVnp(String info, String amount, String code) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         OrderTransaction orderTransaction = orderTransactionRespository.getOrderTransactionById(Integer.parseInt(info));
-
         PaymentDto paymentDto = mapper.readValue(orderTransaction.getValue(), PaymentDto.class);
         orderTransactionRespository.deleteOrderTransactionById(orderTransaction.getId());
         if (!code.equals("00")) {
             return null;
         }
-
-        String url = savePaymentGeneral(paymentDto, Integer.parseInt(amount), 0, 2, 1,0,0);
-
+        String url = savePaymentGeneral(paymentDto, 0, 0, 2, 1); // Không cần amount ở đây
         orderTransactionRespository.deleteOrderTransactionById(orderTransaction.getId());
         return url;
     }
-
 
     public String savePaymentCod(PaymentDto paymentDto) {
         int id = token.getIdfromToken();
         Customer customer = customerRepository.findById(id);
         paymentDto.setCustomer(customer);
-        int total = 0;
-        int totalProduct = 0;
-        int product = 0;
-        int shipCost = 0;
-        for (OrderDto order : paymentDto.getOrders()) {
-            total += order.getShipCost() + order.getTotalCost();
-            shipCost = order.getShipCost();
-        }
-        for (OrderDto order : paymentDto.getOrders()) {
-            totalProduct += order.getTotalCost();
-        }
-        product = totalProduct;
-        // Xử lý khi discountAmount không được gửi về
-        int discountAmount = (paymentDto.getDiscountAmount() != null) ? paymentDto.getDiscountAmount() : 0;
 
-        // Trừ số tiền giảm giá nếu có
-        total -= discountAmount;
-        if (total < 0) {
-            total = 0; // Đảm bảo tổng không âm
-        }
-
-        return savePaymentGeneral(paymentDto, product, 0, 1, 0,discountAmount,shipCost);
+        return savePaymentGeneral(paymentDto, 0, 0, 1, 0); // Gọi hàm chung với các tham số mặc định
     }
 
-
-    public String savePaymentGeneral(PaymentDto paymentDto,int amount, int status, int payment, int pay,int discountAmount,int shipCost) {
-
+    public String savePaymentGeneral(PaymentDto paymentDto, int amount, int status, int payment, int pay) {
         List<OrderDto> orders = paymentDto.getOrders();
         Address address = paymentDto.getAddress();
         Customer customer = paymentDto.getCustomer();
@@ -96,8 +70,17 @@ public class PaymentService {
             createOrder.setPayment_status(pay);
             createOrder.setPayment(payment);
             createOrder.setOrder_status(status);
-            createOrder.setOrderTotal(amount);
-            createOrder.setDiscount(discountAmount);
+
+            // Tính subTotal chỉ từ orderList (giá trị hàng hóa của shop)
+            int subTotal = order.getOrderList().stream()
+                    .mapToInt(item ->
+                            item.getProduct().getPrice() * item.getQuantity() +
+                                    item.getProductAddOns().stream().mapToInt(ProductAddOn::getPrice).sum() * item.getQuantity()
+                    )
+                    .sum();
+            createOrder.setOrderTotal(subTotal); // Chỉ lưu subTotal vào order_total
+            createOrder.setDiscount(order.getSaleCost()); // Lưu saleCost (discountAmount) nếu có
+
             int check = orderRespository.saveOrder(createOrder);
             if (check != 0) {
                 createOrder.setId(check);
@@ -114,7 +97,7 @@ public class PaymentService {
                         return null;
                     } else {
                         cartItemRepository.deleteCart(productItem.getCartId());
-                        if(!productItem.getProductAddOns().isEmpty()){
+                        if (!productItem.getProductAddOns().isEmpty()) {
                             for (ProductAddOn productAddOn : productItem.getProductAddOns()) {
                                 orderDetailAddOnRepository.addDetailAddOn(productAddOn, insert);
                             }
@@ -125,20 +108,31 @@ public class PaymentService {
                 return null;
             }
         }
-        if (pay != 0) {
-            amount = amount / 100;
 
+        // Tính tổng giá trị hiển thị trên URL (bao gồm shipCost và trừ discount)
+        int totalAmount = orders.stream()
+                .mapToInt(order -> {
+                    int subTotal = order.getOrderList().stream()
+                            .mapToInt(item ->
+                                    item.getProduct().getPrice() * item.getQuantity() +
+                                            item.getProductAddOns().stream().mapToInt(ProductAddOn::getPrice).sum() * item.getQuantity()
+                            )
+                            .sum();
+                    return subTotal + order.getShipCost() - order.getSaleCost();
+                })
+                .sum();
+
+        if (pay != 0) {
+            totalAmount = totalAmount / 100; // Điều chỉnh nếu cần (VNPay)
         }
 
         return "http://localhost:5173/payment-success"
-                + "?amount=" + URLEncoder.encode((amount-discountAmount+shipCost)+"", StandardCharsets.UTF_8)
+                + "?amount=" + URLEncoder.encode(String.valueOf(totalAmount), StandardCharsets.UTF_8)
                 + "&email=" + URLEncoder.encode(customer.getEmail(), StandardCharsets.UTF_8)
                 + "&numberOrder=" + URLEncoder.encode(String.valueOf(orders.size()), StandardCharsets.UTF_8)
                 + "&address=" + URLEncoder.encode(paymentDto.getAddress().getAddress(), StandardCharsets.UTF_8)
                 + "&name=" + URLEncoder.encode(paymentDto.getAddress().getNameReceiver(), StandardCharsets.UTF_8)
                 + "&phone=" + URLEncoder.encode(paymentDto.getAddress().getPhone(), StandardCharsets.UTF_8)
-                + "&pay=" + pay
-
-                ;
+                + "&pay=" + pay;
     }
 }

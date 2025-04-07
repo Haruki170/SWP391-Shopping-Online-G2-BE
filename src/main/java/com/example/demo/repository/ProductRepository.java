@@ -31,7 +31,7 @@ public class ProductRepository extends AbstractRepository<Product> implements IP
 
     @Override
     public Product findByIdAll(int id) {
-        String sql ="select * FROM product as p JOIN shop as s on p.shop_id =s.shop_id where product_id = ? ";
+        String sql ="select * FROM product as p JOIN shop as s on p.shop_id =s.shop_id where product_id = ? and p.status = 1";
         Product product = super.findOne(sql,new ProductMapper(), id);
         System.out.println(id);
         System.out.println("dẫ tìm");
@@ -60,7 +60,7 @@ public class ProductRepository extends AbstractRepository<Product> implements IP
 
     @Override
     public List<Product> findAll(int shopid) {
-        String sql ="select * FROM product as p JOIN shop as s on p.shop_id =s.shop_id  where s.shop_id = ? ";
+        String sql ="select * FROM product as p   where p.shop_id = ?";
         return super.findAll(sql,new ProductMapper(),shopid);
     }
 
@@ -222,14 +222,14 @@ public class ProductRepository extends AbstractRepository<Product> implements IP
             String sql = "WITH r AS ( " +
                     "    SELECT p.* " +
                     "    FROM product_category AS pc " +
-                    "    JOIN product AS p ON pc.product_id = p.product_id " +
+                    "    JOIN product AS p ON pc.product_id = p.product_id and p.status = 1" +
                     "    JOIN category AS c ON c.category_id = pc.category_id " +
                     "    WHERE c.category_id = ? " +
                     "), " +
                     "p AS ( " +
                     "    SELECT p.* " +
                     "    FROM product_category AS pc " +
-                    "    JOIN product AS p ON pc.product_id = p.product_id " +
+                    "    JOIN product AS p ON pc.product_id = p.product_id and p.status = 1" +
                     "    JOIN category AS c ON c.category_id = pc.category_id " +
                     "    WHERE c.category_name LIKE '%hot%' " +
                     ") " +
@@ -304,13 +304,13 @@ public class ProductRepository extends AbstractRepository<Product> implements IP
                     + "s.shop_id AS shopId, s.shop_name AS shopName, s.shop_logo AS shopLogo, p.status AS status "
                     + "FROM product p "
                     + "LEFT JOIN shop s ON p.shop_id = s.shop_id "
-                    + "WHERE p.product_name LIKE ? AND p.status = 1 AND s.status = 2 "
+                    + "WHERE p.product_name LIKE ? AND p.status = 1 "
                     + "UNION "
                     + "SELECT 'shop' AS type, s.shop_id AS id, s.shop_name AS name, NULL AS price, "
                     + "NULL AS avatar, NULL AS description, s.shop_id AS shopId, s.shop_name AS shopName, "
                     + "s.shop_logo AS shopLogo, NULL AS status "
                     + "FROM shop s "
-                    + "WHERE s.shop_name LIKE ? AND s.status = 2";
+                    + "WHERE s.shop_name LIKE ?";
 
             statement = connection.prepareStatement(sql);
             statement.setString(1, "%" + searchTerm + "%");
@@ -347,7 +347,80 @@ public class ProductRepository extends AbstractRepository<Product> implements IP
         return results;
     }
 
+    public List<Product> findByFilters(int category, String province, int minRating, double minPrice, String search, String sortOrder, int page, int size) {
+        List<Product> products = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT p.*, AVG(f.feedback_rating) AS avg_rating " +
+                        "FROM product AS p " +
+                        "JOIN product_category AS pc ON p.product_id = pc.product_id " +
+                        "JOIN shop_address AS sa ON p.shop_id = sa.shop_id " +
+                        "JOIN shop AS s ON p.shop_id = s.shop_id " + // Added shop join for status
+                        "LEFT JOIN customer_feedback AS f ON f.product_id = p.product_id " +
+                        "WHERE p.status = 1 " // Active products and shops only
+        );
 
+        List<Object> params = new ArrayList<>();
+
+        if (category > 0) {
+            sql.append("AND pc.category_id = ? ");
+            params.add(category);
+        }
+        if (!province.isEmpty() && !"other".equals(province)) {
+            sql.append("AND sa.shop_address_province = ? ");
+            params.add(province);
+        } else if ("other".equals(province)) {
+            sql.append("AND sa.shop_address_province NOT IN ('Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng') ");
+        }
+        if (minPrice > 0) {
+            sql.append("AND p.product_price >= ? ");
+            params.add(minPrice);
+        }
+        if (!search.isEmpty()) {
+            sql.append("AND p.product_name LIKE ? ");
+            params.add("%" + search + "%");
+        }
+
+        sql.append("GROUP BY p.product_id ");
+        if (minRating > 0) {
+            sql.append("HAVING avg_rating >= ? ");
+            params.add(minRating);
+        }
+
+        // Sorting
+        sql.append("ORDER BY p.product_price ").append(sortOrder.equalsIgnoreCase("asc") ? "ASC " : "DESC ");
+
+        // Pagination
+        int offset = (page - 1) * size;
+        sql.append("LIMIT ? OFFSET ?");
+        params.add(size);
+        params.add(offset);
+
+        try (Connection connection = DBContext.getConnect();
+             PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+
+            // Set parameters
+            for (int i = 0; i < params.size(); i++) {
+                statement.setObject(i + 1, params.get(i));
+            }
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Product product = new Product();
+                    product.setId(resultSet.getInt("product_id"));
+                    product.setName(resultSet.getString("product_name"));
+                    product.setPrice(resultSet.getInt("product_price"));
+                    product.setAvatar(resultSet.getString("product_avatar"));
+                    product.setDescription(resultSet.getString("product_desc"));
+                    product.setRating(resultSet.getDouble("avg_rating"));
+                    products.add(product);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return products;
+    }
 
     @Override
     public List<Product> findAllProductByShopAdmin(int shopId) {
@@ -472,8 +545,7 @@ public class ProductRepository extends AbstractRepository<Product> implements IP
                 "    order_detail od ON p.product_id = od.product_id\n" +
                 "WHERE \n" +
                 "    c.category_id = ? \n" +
-                "    AND p.status = 1 \n" +  // Điều kiện sản phẩm có status = 1
-                "    AND s.status = 2  -- Điều kiện shop có status = 2\n" +
+                "    AND p.status = 1 \n" +
                 "GROUP BY \n" +
                 "    p.product_id\n" +
                 "ORDER BY \n" +

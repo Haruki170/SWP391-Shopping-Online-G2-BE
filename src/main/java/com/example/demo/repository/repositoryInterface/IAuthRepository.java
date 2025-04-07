@@ -1,9 +1,6 @@
 package com.example.demo.repository.repositoryInterface;
 
-import com.example.demo.entity.Admin;
-import com.example.demo.entity.Customer;
-import com.example.demo.entity.ShopOwner;
-import com.example.demo.entity.User;
+import com.example.demo.entity.*;
 
 public interface IAuthRepository {
     public Customer customerLogin(String email);
@@ -11,5 +8,6 @@ public interface IAuthRepository {
     public int checkCustomerEmail(String email);
     public int checkShopEmail(String email);
     public int checkAdminEmail(String email);
-
+    public int CheckShipperInfo(String phone, String identity);
+    public boolean ShipperRegister(String name, String phone, String identity, String password);
 }

@@ -140,9 +140,7 @@ public class ProductService implements IProductService {
         }
     }
 
-    public List<Product> filterProducts(int category, String province, int rating, double price) {
-        return productRepository.findByFilters(category, province, rating, price);
-    }
+
 
     @Override
     public List<Product> findProductsById(int id) {
@@ -175,6 +173,24 @@ public class ProductService implements IProductService {
     public Product getOneProduct(int id) {
         return null;
     }
+    @Override
+    public List<Product> filterProducts(int category, String province, int rating, double price, String search, String sortOrder, int page, int size) {
+        List<Product> products = productRepository.findByFilters(category, province, rating, price, search, sortOrder, page, size);
+        for (Product pr : products) {
+            pr.setOptions(productOptionRepository.findProductOptionById(pr.getId()));
+            pr.setAddOns(productAddonRepository.findProductAddonById(pr.getId()));
+            pr.setCategories(categoryRespository.getCategoryByProduct(pr.getId()));
+            int shopID = productRepository.findShopIDbyProductID(pr.getId());
+            Shop shop = shopRespository.findShopbyIDHung(shopID);
+            if (shop != null) {
+                shop.setShopAddresses(shhopAddressRespository.findShopAddressByShopID(shopID));
+                shop.setShopPhones(shopPhoneRespository.FindPhoneByShopID(shopID));
+                pr.setShop(shop);
+            }
+        }
+        return products;
+    }
+
 
 
     // Helper method to update product options

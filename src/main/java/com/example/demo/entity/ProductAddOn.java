@@ -12,7 +12,7 @@ import lombok.*;
 public class ProductAddOn {
     private int id;
     private String name;
-    private double price;
+    private int price;
     private String note;
     private int productId;
 }

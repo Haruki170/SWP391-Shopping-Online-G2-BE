@@ -22,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@CrossOrigin(origins = "http://localhost:5175")
 public class AdminController {
     @Autowired
     Token tokenService;

@@ -139,6 +139,11 @@ public class OrderRespository extends AbstractRepository<Order> implements IOrde
         String sql = "UPDATE `order` SET order_status = ? WHERE order_id = ?";
         return super.save(sql,status,orderId);
     }
+    @Override
+    public boolean updateOrderShipping(int orderId, int ship) {
+        String sql = "UPDATE `order` SET ship_cost = ? WHERE order_id = ?";
+        return super.save(sql,ship,orderId);
+    }
 
     public boolean updateOrderStatusByCode(String code, int status) {
         String sql = "UPDATE `order` SET order_status = ? WHERE order_code = ?";
