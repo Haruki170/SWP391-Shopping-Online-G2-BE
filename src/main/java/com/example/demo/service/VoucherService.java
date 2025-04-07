@@ -24,10 +24,10 @@ public class VoucherService implements IVoucherService {
     public List<Voucher> findAllVoucher() throws AppException {
         return voucherRepository.findAll();
     }
-    @Override
-    public List<Voucher> findValidVouchersByShopId(int shopId) {
-        return voucherRepository.findValidByShopId(shopId);
-    }
+//    @Override
+//    public List<Voucher> findValidVouchersByShopId(int shopId) {
+//        return voucherRepository.findValidByShopId(shopId);
+//    }
     @Override
     public Voucher findById(int id) throws AppException {
         Voucher voucher = voucherRepository.findById(id);
@@ -69,5 +69,9 @@ public class VoucherService implements IVoucherService {
             throw new AppException(ErrorCode.Voucher_NotFound);
         }
         return voucherRepository.delete(id);
+    }
+    @Override
+    public List<Voucher> searchVouchers(String code, Integer shopId, Double minDiscount, Double maxDiscount, String startDate, String endDate) {
+        return voucherRepository.searchVouchers(code, shopId, minDiscount, maxDiscount, startDate, endDate);
     }
 }

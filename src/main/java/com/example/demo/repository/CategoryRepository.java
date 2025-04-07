@@ -40,7 +40,25 @@ public class CategoryRepository extends AbstractRepository<Category>  implements
             return null;
         }
     }
+    public List<Category> searchCategories(String name, Integer status, Integer parent) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM category WHERE 1=1");
+        List<Object> params = new ArrayList<>();
 
+        if (name != null && !name.isEmpty()) {
+            sql.append(" AND category_name LIKE ?");
+            params.add("%" + name + "%");
+        }
+        if (status != null) {
+            sql.append(" AND status = ?");
+            params.add(status);
+        }
+        if (parent != null) {
+            sql.append(" AND parent = ?");
+            params.add(parent);
+        }
+
+        return super.findAll(sql.toString(), new CategoryMapper(), params.toArray());
+    }
 
     public List<CategoryResponse> getAllCategory() {
         String sql = "Select * from `category` where status=1";

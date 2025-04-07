@@ -63,7 +63,7 @@ public class OrderService implements IOrderService {
 
             // Bước 4: Đặt danh sách OrderList vào OrderDTO
             getOrderResponse.setOrderList(orderListsForShop);
-            getOrderResponse.setVoucherList(voucherRepository.findValidByShopId(shop.getId()));
+            //getOrderResponse.setVoucherList(voucherRepository.findValidByShopId(shop.getId()));
             // Bước 5: Tính phí vận chuyển (giả định bạn có logic để tính shipCost)
             int shipcost = calculateShipCostForShop(orderListsForShop, shop);
             int totalCost = calulateTotalCost(orderListsForShop);
@@ -179,7 +179,7 @@ public class OrderService implements IOrderService {
         if(shop.getAutoShipCost() == 0){
             return 0;
         }
-        else{
+       else{
             double totalWeight = orderList.stream()
                     .mapToDouble(order -> {
                         Product p = order.getProduct();
@@ -191,6 +191,7 @@ public class OrderService implements IOrderService {
             return cost;
         }
     }
+
 
     private int calulateTotalCost(List<OrderList> orderList){
         int total = 0;

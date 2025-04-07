@@ -4,7 +4,7 @@ import com.example.demo.entity.Voucher;
 import com.example.demo.mapper.VoucherMapper;
 import com.example.demo.repository.repositoryInterface.IVoucherRepository;
 import org.springframework.stereotype.Repository;
-
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -29,11 +29,11 @@ public class VoucherRepository extends AbstractRepository<Voucher> implements IV
         return  super.findAll(sql, new VoucherMapper(), id);
 
     }
-    @Override
-    public List<Voucher> findValidByShopId(int shopId) {
-        String sql = "SELECT * FROM voucher WHERE shop_id = ? AND start_date <= NOW() AND end_date >= NOW() AND quantity > 0";
-        return  super.findAll(sql, new VoucherMapper(), shopId);
-    }
+//    @Override
+//    public List<Voucher> findValidByShopId(int shopId) {
+//        String sql = "SELECT * FROM voucher WHERE shop_id = ? AND start_date <= NOW() AND end_date >= NOW() AND quantity > 0";
+//        return  super.findAll(sql, new VoucherMapper(), shopId);
+//    }
     @Override
     public boolean insert(Voucher voucher) {
         String sql = "insert into voucher(code, description, discount_amount, min_order_amount, start_date, end_date, quantity,shop_id) values(?,?,?,?,?,?,?,?) ";
@@ -60,5 +60,36 @@ public class VoucherRepository extends AbstractRepository<Voucher> implements IV
         String sql = "select * from voucher where code = ?";
         List<Voucher> list = super.findAll(sql, new VoucherMapper(), code);
         return list.size();
+    }
+    public List<Voucher> searchVouchers(String code, Integer shopId, Double minDiscount, Double maxDiscount, String startDate, String endDate) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM voucher WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        if (code != null && !code.isEmpty()) {
+            sql.append(" AND code LIKE ?");
+            params.add("%" + code + "%");
+        }
+        if (shopId != null) {
+            sql.append(" AND shop_id = ?");
+            params.add(shopId);
+        }
+        if (minDiscount != null) {
+            sql.append(" AND discount_amount >= ?");
+            params.add(minDiscount);
+        }
+        if (maxDiscount != null) {
+            sql.append(" AND discount_amount <= ?");
+            params.add(maxDiscount);
+        }
+        if (startDate != null && !startDate.isEmpty()) {
+            sql.append(" AND start_date >= ?");
+            params.add(startDate);
+        }
+        if (endDate != null && !endDate.isEmpty()) {
+            sql.append(" AND end_date <= ?");
+            params.add(endDate);
+        }
+
+        return super.findAll(sql.toString(), new VoucherMapper(), params.toArray());
     }
 }

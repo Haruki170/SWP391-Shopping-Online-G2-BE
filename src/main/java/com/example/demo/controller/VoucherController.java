@@ -56,9 +56,9 @@ public class VoucherController {
         voucherService.deleteVoucher(id);
         return ResponseEntity.ok(new ApiResponse<>(200, "Xóa voucher thành công", null));
     }
-    @GetMapping("/get-valid")
-    public ResponseEntity<ApiResponse<List<Voucher>>> getValidVouchers(@RequestParam("shopId") int shopId) throws Exception {
-        List<Voucher> validVouchers = voucherService.findValidVouchersByShopId(shopId);
-        return ResponseEntity.ok(new ApiResponse<>(200, "Lấy danh sách voucher còn hiệu lực thành công", validVouchers));
-    }
+//    @GetMapping("/get-valid")
+//    public ResponseEntity<ApiResponse<List<Voucher>>> getValidVouchers(@RequestParam("shopId") int shopId) throws Exception {
+//        List<Voucher> validVouchers = voucherService.findValidVouchersByShopId(shopId);
+//        return ResponseEntity.ok(new ApiResponse<>(200, "Lấy danh sách voucher còn hiệu lực thành công", validVouchers));
+//    }
 }

@@ -11,6 +11,5 @@ public interface IVoucherService {
     public boolean addVoucher(Voucher voucher) throws AppException;
     public boolean updateVoucher(int id, Voucher voucher) throws AppException;
     public boolean deleteVoucher(int id) throws AppException;
-    public List<Voucher> findValidVouchersByShopId(int shopId);
-    List<Voucher> findVouchersByShopId(int id);
+    public List<Voucher> searchVouchers(String code, Integer shopId, Double minDiscount, Double maxDiscount, String startDate, String endDate);
 }

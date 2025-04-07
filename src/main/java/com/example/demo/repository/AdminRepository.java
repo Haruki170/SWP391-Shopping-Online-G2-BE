@@ -103,7 +103,13 @@ public class AdminRepository extends AbstractRepository<Admin> implements IAdmin
         String sql = "select count(*) from admin where admin_email = ? and role = ?";
         return super.selectCount(sql, email, role);
     }
-
-
-
+    public List<Admin> searchAdminByEmail(String email) {
+        String sql = "select * from admin where admin_email like ?";
+        return super.findAll(sql, new AdminMapper(), "%" + email + "%");
+    }
+    // Filter Admins by Status
+    public List<Admin> filterAdminByStatus(int status) {
+        String sql = "select * from admin where status = ?";
+        return super.findAll(sql, new AdminMapper(), status);
+    }
 }
