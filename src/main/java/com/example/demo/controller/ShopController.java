@@ -133,29 +133,7 @@ public class ShopController {
         return ResponseEntity.ok(apiResponse);
 
     }
-
-
-    @GetMapping("/customer-detail-shop/{id}")
-    public ResponseEntity<Shop> getShopById(@PathVariable int id) {
-        System.out.println(id);
-        Shop shop = shopService.getShopById(id);
-        if (shop != null) {
-            return new ResponseEntity<>(shop, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @GetMapping("/detail-customer/{id}")
-    public ResponseEntity<Shop> getShopById2(@PathVariable int id) {
-        System.out.println(id);
-        Shop shop = shopService.getShopById(id);
-        if (shop != null) {
-            return new ResponseEntity<>(shop, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
+    
 
 
     @GetMapping("/get/{id}")
