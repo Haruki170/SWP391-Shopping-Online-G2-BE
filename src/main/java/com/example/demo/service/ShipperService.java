@@ -49,4 +49,9 @@ public class ShipperService implements IShipperService {
     public List<Shipper> filterShippersByStatus(int status) {
         return shipperRepository.filterShippersByStatus(status);
     }
+
 }
+    public List<Review> getReviewsForShipper(int shipperId);
+
+
+
