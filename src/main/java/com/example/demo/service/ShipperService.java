@@ -50,8 +50,8 @@ public class ShipperService implements IShipperService {
         return shipperRepository.filterShippersByStatus(status);
     }
 
+
 }
-    public List<Review> getReviewsForShipper(int shipperId);
 
 
 

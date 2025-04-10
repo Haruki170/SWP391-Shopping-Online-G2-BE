@@ -58,10 +58,7 @@ public class ShipperController {
         return ResponseEntity.ok(new ApiResponse<>(200, "Success", shippers));
     }
 }
-     @GetMapping("/{id}/reviews")
-     public ResponseEntity<ApiResponse<List<Review>>> getReviewsForShipper(@PathVariable int id) {
-    List<Review> reviews = shipperService.getReviewsForShipper(id);
-    return ResponseEntity.ok(new ApiResponse<>(200, "Success", reviews));
-}
+
+
 
 
