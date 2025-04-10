@@ -84,7 +84,6 @@ public class BannerController {
         }
     }
 
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBanner(@PathVariable int id) {
         boolean deleted = bannerService.deleteBanner(id);
