@@ -6,7 +6,8 @@ public class ReturnOrder {
     private String orderCode;
     private String reason;
     private String customerName;
-    
+    private LocalDate returnDate;
+    private String status; // pending, approved, rejected
 
     // Getters and setters
 }
