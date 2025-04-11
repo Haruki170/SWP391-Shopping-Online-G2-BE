@@ -35,3 +35,18 @@ public class ReviewServiceImpl implements IReviewService {
         return reviewRepository.findByShipperId(shipperId);
     }
 }
+@Override
+public List<Review> searchReviews(int shipperId, String keyword) {
+    return reviewRepository.findByShipperIdAndCommentContainingIgnoreCase(shipperId, keyword);
+}
+
+@Override
+public List<Review> filterReviewsByRating(int shipperId, int minRating) {
+    return reviewRepository.findByShipperIdAndRatingGreaterThanEqual(shipperId, minRating);
+}
+
+@Override
+public List<Review> getSortedReviews(int shipperId, String sortBy, String direction) {
+    Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+    return reviewRepository.findAll((root, query, cb) -> cb.equal(root.get("shipper").get("id"), shipperId), sort);
+}
